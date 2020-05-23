@@ -7,6 +7,7 @@ from html.parser import HTMLParser
 from multiprocessing import Queue
 from pathlib import Path
 from urllib.error import HTTPError
+import ffmpeg
 
 import imgurpython
 from bs4 import BeautifulSoup
@@ -473,6 +474,9 @@ class Direct:
         fileDir = directory / (
             POST["postSubmitter"]+"_"+title+"_"+POST['postId']+POST['postExt']
         )
+        fileDirAudio = directory / (
+            POST["postSubmitter"]+"_"+title+"_"+POST['postId']+'.mp3'
+        )
         tempDir = directory / (
             POST["postSubmitter"]+"_"+title+"_"+POST['postId']+".tmp"
         )
@@ -481,9 +485,19 @@ class Direct:
             getFile(fileDir,tempDir,POST['postURL'],POST)
         except FileNameTooLong:
             fileDir = directory / (POST['postId']+POST['postExt'])
+            fileDirAudio = directory / (POST['postId']+'.mp3')
             tempDir = directory / (POST['postId']+".tmp")
 
             getFile(fileDir,tempDir,POST['postURL'], POST)
+
+        if POST['postExt'] == ".mp4":
+            getFile(fileDirAudio,tempDir,POST['postURLAudio'], POST)
+            tmp = directory / (POST['postId']+'out.mp4')
+            tmp = tmp.absolute()
+            ffmpeg.concat(ffmpeg.input(fileDir), ffmpeg.input(fileDirAudio), v=1, a=1).output(filename=tmp).run()
+            os.remove(fileDir)
+            os.remove(fileDirAudio)
+            os.rename(tmp, fileDir)
 
 class Self:
     def __init__(self,directory,post):

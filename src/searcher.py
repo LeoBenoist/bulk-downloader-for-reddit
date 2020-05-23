@@ -438,6 +438,7 @@ def checkIfMatching(submission):
     if directLink is not False:
         details['postType'] = 'direct'
         details['postURL'] = directLink
+        details['postURLAudio'] = submission.url+'/audio'
         directCount += 1
         return details
 
