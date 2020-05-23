@@ -466,9 +466,7 @@ def isPostExists(POST):
     for extension in possibleExtensions:
 
         OLD_FILE_PATH = PATH / (
-            title
-            + "_" + POST['postId']
-            + extension
+            ".ignore_" + POST['postId']
         )
         FILE_PATH = PATH / (
             POST["postSubmitter"] 
@@ -482,7 +480,7 @@ def isPostExists(POST):
         if OLD_FILE_PATH.exists() or \
            FILE_PATH.exists() or \
            SHORT_FILE_PATH.exists():
-            os.utime(FILE_PATH, (POST['postCreatedAt'], POST['postCreatedAt']))
+            # os.utime(FILE_PATH, (POST['postCreatedAt'], POST['postCreatedAt']))
             return True
 
     else:
